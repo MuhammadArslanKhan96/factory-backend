@@ -1,12 +1,16 @@
 import axios from 'axios';
 import AWS from 'aws-sdk';
+import dotenv from "dotenv";
+//@ts-ignore
+dotenv.config("dotnev");
+const accessKeyId = process.env.ACESS_KEY_ID;
+const secretAccessKey = process.env.SECRET_ACESS_KEY;
+const region = process.env.RERIGION
 
-// const AcessKey = "AKIAQ6JHZEUQHWSUJ2EN";
-// const secretKey = "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";
 AWS.config.update({
-    accessKeyId: 'AKIAQ6JHZEUQHWSUJ2EN',
-    secretAccessKey: '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',
-    region: 'us-east-1',
+    accessKeyId: accessKeyId,
+    secretAccessKey: secretAccessKey,
+    region: region,
 });
 const s3 = new AWS.S3();
 const bucketName = 'factoryhelp-backend';

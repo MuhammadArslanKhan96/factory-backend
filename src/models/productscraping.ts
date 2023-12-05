@@ -17,6 +17,7 @@ export const insertSubCategeoryOnDb = async (dataToInsert: any) => {
                 );
                 return response.rows[0];
             } else {
+                console.log("Duplicate entry: Product not added.");
                 return null;
             }
         });
@@ -61,8 +62,10 @@ export const insertDetailsOnDb = async (details: any) => {
             const result = await pool.query(productDetailsQuerey,
                 [name, code, isCoreRange, orderCode, url, minOrderQuantity, maxOrderQuantity, orderQuantityInterval, unit, isConfigurable, descriptionPoints, imageSrc, marketingBadge, isArticle, shortCode, breadcrumbValues, identCode1, identCode2, isDidactic, shortDescription]
             );
+            console.log('Document added to the collection.');
             return result.rows[0];
         } else {
+            console.log('Duplicate entry: Document not added.');
         }
     } catch (error) {
         throw error;
@@ -97,6 +100,7 @@ export const insertListsOndDb = async (product: any) => {
             );
             return insertResult.rows[0];
         } else {
+            console.log('Duplicate entry: Product not added.');
             return null;
         }
     } catch (error) {
@@ -132,7 +136,9 @@ export const insertAccessoryIntoDatabase = async (accessoryData: any) => {
                             product.imageSrc,
                         ]
                     );
+                    console.log("🚀 ~ insertAccessoryIntoDatabase ~ response:", response.rows[0].id);
                 } else {
+                    console.log("Duplicate entry: Product not added.");
                 }
             }
         }
@@ -157,8 +163,10 @@ export const AddFactoryHelpProductDb = async (product: any) => {
 
             await pool.query('UPDATE factoryProduct  SET images = $1 WHERE id = $2', [imageUrls, insertResult.rows[0].id]);
 
+            console.log('Product added successfully:', insertResult.rows[0]);
             return insertResult.rows[0];
         } else {
+            console.log('Duplicate entry: Product not added.');
             return null;
         }
     } catch (error: any) {

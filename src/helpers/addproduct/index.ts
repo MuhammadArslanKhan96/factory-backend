@@ -1,6 +1,9 @@
 import axios from "axios";
-const apiKey = "ck_ff83bb9c3517e25c4ba66918a851bfd67d813085";
-const apiSecret = "cs_7e9fd6b2f427175f0812875b3c2811edccca8c81";
+import dotenv from "dotenv";
+//@ts-ignore
+dotenv.config("dotenv");
+const apiKey = process.env.Api_Key_S3;
+const apiSecret = process.env.API_SECRET_S3;
 // const baseUrl = "https://factory-ambulance.online/wp-json/wc/v3/products";
 const authHeader = `Basic ${Buffer.from(`${apiKey}:${apiSecret}`).toString("base64")}`;
 
@@ -22,7 +25,7 @@ export async function scrapeProducts(url: any) {
                 images: product.images.map((image: any) => image.src),
             };
         });
-
+        console.log(simplifiedProducts);
         return simplifiedProducts;
     } catch (error: any) {
         throw new Error("Failed to fetch products");

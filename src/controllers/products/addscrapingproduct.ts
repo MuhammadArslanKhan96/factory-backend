@@ -46,11 +46,14 @@ export const addSubCategory = async (req: express.Request, res: express.Response
         const data = await insertSubCategeoryOnDb(dataToInsert);
         if (data) {
             await addDetailsDb();
+            console.log("success");
         } else {
+            console.log("failed");
         }
 
         res.status(200).json({ message: "Product added sucessfully", data });
     } catch (error) {
+        console.log("🚀 ~ file: addscrapingproduct.ts:45 ~ addSubCategory ~ error:", error);
         res.status(500).json({ status: "Error", message: "Server Error" });
     }
 };
@@ -60,6 +63,7 @@ export const addDetailsDb = async () => {
         const pimIds = await getPimId();
         const baseUrl = "https://www.festo.com/gb/en/search/categories/";
         for (const pimId of pimIds) {
+            console.log("🚀 ~ file: addscrapingproduct.ts:67 ~ addDetailsDb ~ pimId:", pimId);
             const url = `${baseUrl}${pimId}/products/`;
             let currentPage = 0;
 
@@ -93,16 +97,20 @@ export const addDetailsDb = async () => {
         await addLists();
         return { message: "Successfully got all details" };
     } catch (error) {
+        console.log("🚀 ~ file: addscrapingproduct.ts:89 ~ addDetailsDb ~ error:", error);
     }
 };
 
 export const addLists = async () => {
     try {
         const shortcodes = await getShortCodesFromDb() as any;
+        console.log("🚀 ~ file: addscrapingproduct.ts:107 ~ addLists ~ shortcodes:", shortcodes);
 
         for (const shortcode of shortcodes) {
+            console.log("🚀 ~ file: addscrapingproduct.ts:109 ~ addLists ~ shortcode:", shortcode);
             const sanitizedShortCode = shortcode.replace(/[-\/]/g, '_');
             const baseUrl = `https://www.festo.com/gb/en/search/automation/products/${sanitizedShortCode}/articles/`;
+            console.log("🚀 ~ file: addscrapingproduct.ts:87 ~ addLists ~ baseUrl:", baseUrl);
             let currentPage = 0;
             while (true) {
                 try {
@@ -127,12 +135,14 @@ export const addLists = async () => {
                         try {
                             await insertListsOndDb(product);
                         } catch (error) {
+                            console.error("Error inserting product into the database:", error);
                         }
                     });
 
                     await Promise.all(insertPromises);
                     currentPage++;
                 } catch (error) {
+                    console.error("Error in loop iteration:", error);
                     break;
                 }
             }
@@ -141,6 +151,7 @@ export const addLists = async () => {
 
         return { message: "All Products added Successfully" };
     } catch (error) {
+        console.error("Server Error:", error);
         return { message: "Server Error" };
     }
 };
@@ -155,6 +166,7 @@ export const addAcessiories = async () => {
         const responses = await Promise.all(
             orderCodes.map(async (orderCode) => {
                 const url = `https://www.festo.com/gb/en/json/articles/${orderCode}/accessories/?recommendedAccessories=false`;
+                console.log("🚀 ~ file: addscrapingproduct.ts:125 ~ orderCodes.map ~ url:", url);
                 const response = await axios.get(url, {
                     headers: {
                         "Cookie": "LastSite=gb-en-001; JHYSESSIONID=Y14-fe3a42fd-9068-40c6-9a33-f00f93d7b72b; ROUTE=.accstorefront-595b85f95c-5d28z",
@@ -192,6 +204,7 @@ export const addFactoryProduct = async (req: express.Request, res: express.Respo
                 try {
                     await AddFactoryHelpProductDb(product);
                 } catch (error: any) {
+                    console.error('Error inserting product into the database:', error.message);
 
                 }
             }
@@ -200,6 +213,7 @@ export const addFactoryProduct = async (req: express.Request, res: express.Respo
         }
         res.status(200).json(allProducts);
     } catch (error: any) {
+        console.error(error.response.data);
         res.status(500).json({ message: "Server Error" });
     }
 }

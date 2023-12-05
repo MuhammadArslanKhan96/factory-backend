@@ -1,28 +1,22 @@
-import { Product, ProductDetailsType } from "../types/product";
-import uploadImage from "../helpers/uploadImage";
+import pool from "../db/db";
+import { factoryProductQuery, productAcessioriesQuerey, productDetailsQuerey, productListQuerey } from "../helpers/queries/products";
+import { uploadImageToS3 } from "../helpers/uploadImage/s3bucket";
 
-import { db } from "../config/firebase";
-
-export const insertDataIntoDatabase = async (dataToInsert: any[]): Promise<any[]> => {
+export const insertSubCategeoryOnDb = async (dataToInsert: any) => {
     try {
-        const insertionPromises = dataToInsert.map(async (data) => {
-            const descriptionElementsArray = JSON.parse(data.description_elements);
+        const insertionPromises = dataToInsert.map(async (data: any) => {
+            const description_elements = JSON.parse(data.description_elements);
             const { pimId } = data;
 
-            const existingSubCategory = await db.collection("subCategory").where("pimId", "==", pimId).get();
+            const existingSubCategory = await pool.query('SELECT * FROM subcategeory WHERE pimId = $1', [pimId]);
 
-            if (existingSubCategory.empty) {
-                const response = await db.collection("subCategory").add({
-                    name: data.name,
-                    pimId: data.pimId,
-                    url: data.url,
-                    image_src: data.image_src,
-                    image_alt: data.image_alt,
-                    descriptionElementsArray: descriptionElementsArray,
-                });
-                return response;
+            if (existingSubCategory.rows.length === 0) {
+                const response = await pool.query(
+                    'INSERT INTO subcategeory (name, pimId, url, image_src, image_alt, description_elements) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+                    [data.name, data.pimId, data.url, data.image_src, data.image_alt, description_elements]
+                );
+                return response.rows[0];
             } else {
-                console.log("Duplicate entry: Product not added.");
                 return null;
             }
         });
@@ -32,7 +26,6 @@ export const insertDataIntoDatabase = async (dataToInsert: any[]): Promise<any[]
         throw error;
     }
 };
-
 
 export const insertDetailsOnDb = async (details: any) => {
     try {
@@ -59,72 +52,89 @@ export const insertDetailsOnDb = async (details: any) => {
             shortDescription,
         } = details;
 
-        const existingDoc = await db.collection('productDetails')
-            .where('code', '==', code)
-            .where('orderCode', '==', orderCode)
-            .get();
+        const existingDoc = await pool.query(
+            'SELECT * FROM productDetails WHERE code = $1 AND orderCode = $2',
+            [code, orderCode]
+        );
 
-        if (existingDoc.empty) {
-            const result = await db.collection('productDetails').add({
-                name,
-                code,
-                isCoreRange,
-                orderCode,
-                url,
-                minOrderQuantity,
-                maxOrderQuantity,
-                orderQuantityInterval,
-                unit,
-                isConfigurable,
-                descriptionPoints,
-                imageSrc,
-                marketingBadge,
-                isArticle,
-                shortCode,
-                breadcrumbValues,
-                identCode1,
-                identCode2,
-                isDidactic,
-                shortDescription,
-            });
-            console.log('Document added to the collection.');
-            return result
+        if (existingDoc.rows.length === 0) {
+            const result = await pool.query(productDetailsQuerey,
+                [name, code, isCoreRange, orderCode, url, minOrderQuantity, maxOrderQuantity, orderQuantityInterval, unit, isConfigurable, descriptionPoints, imageSrc, marketingBadge, isArticle, shortCode, breadcrumbValues, identCode1, identCode2, isDidactic, shortDescription]
+            );
+            return result.rows[0];
         } else {
-            console.log('Duplicate entry: Document not added.');
         }
     } catch (error) {
-        throw error
+        throw error;
     }
 };
 
-export const insertUniqueProduct = async (
-    product: Product
-) => {
-    const { code } = product
+export const insertListsOndDb = async (product: any) => {
+    const { code } = product;
+
     try {
-        const existingProduct = await db.collection("productLists").where("code", "==", code).get();
-        if (existingProduct.empty) {
-            const insertResult = await db.collection("productLists").add({
-                name: product.name,
-                code: product.code,
-                isCoreRange: product.isCoreRange,
-                orderCode: product.orderCode,
-                url: product.url,
-                minOrderQuantity: product.minOrderQuantity,
-                maxOrderQuantity: product.maxOrderQuantity,
-                orderQuantityInterval: product.orderQuantityInterval,
-                unit: product.unit,
-                isConfigurable: product.isConfigurable,
-                cadSrc: product.cadSrc,
-                image: await uploadImage(product.image),
-                marketingBadge: product.marketingBadge,
-                isAddToCartDisabled: product.isAddToCartDisabled,
-                isDataSheetAvailable: product.isDataSheetAvailable,
-            });
-            return insertResult
+        const existingProduct = await pool.query('SELECT * FROM productLists WHERE code = $1', [code]);
+
+        if (existingProduct.rows.length === 0) {
+            const insertResult = await pool.query(productListQuerey,
+                [
+                    product.name,
+                    product.code,
+                    product.isCoreRange,
+                    product.orderCode,
+                    product.url,
+                    product.minOrderQuantity,
+                    product.maxOrderQuantity,
+                    product.orderQuantityInterval,
+                    product.unit,
+                    product.isConfigurable,
+                    product.cadSrc,
+                    product.image,
+                    product.marketingBadge,
+                    product.isAddToCartDisabled,
+                    product.isDataSheetAvailable,
+                ]
+            );
+            return insertResult.rows[0];
+        } else {
+            return null;
         }
-        else {
-            console.log("Duplicate entry: Product not added.")
+    } catch (error) {
+        throw error;
+    }
+}
+
+export const insertAccessoryIntoDatabase = async (accessoryData: any) => {
+    try {
+        for (const accessory of accessoryData.accessoryList) {
+            for (const product of accessory.productList) {
+                const existingAccessory = await pool.query(
+                    'SELECT * FROM accessories WHERE code = $1',
+                    [product.code]
+                );
+
+                if (existingAccessory.rows.length === 0) {
+                    const response = await pool.query(productAcessioriesQuerey,
+                        [
+                            product.name,
+                            product.code,
+                            product.isCoreRange,
+                            product.orderCode,
+                            product.url,
+                            product.minOrderQuantity,
+                            product.maxOrderQuantity,
+                            product.orderQuantityInterval,
+                            product.unit,
+                            product.isConfigurable,
+                            product.cadSrc,
+                            product.isDataSheetAvailable,
+                            product.isRecommendedAccessory,
+                            product.imageSrc,
+                        ]
+                    );
+                } else {
+                }
+            }
         }
     } catch (error) {
         throw error;
@@ -132,36 +142,26 @@ export const insertUniqueProduct = async (
 };
 
 
-export const insertAccessoryIntoDatabase = async (accessoryData: any) => {
+export const AddFactoryHelpProductDb = async (product: any) => {
+    const { name, permalink, price, categories, images } = product;
     try {
-        for (const accessory of accessoryData.accessoryList) {
-            for (const product of accessory.productList) {
-                const existingAccessory = await db.collection("accessories").where("code", "==", product.code).get();
-                if (existingAccessory.empty) {
-                    const response = await db.collection("accessories").add({
-                        name: product.name,
-                        code: product.code,
-                        isCoreRange: product.isCoreRange,
-                        orderCode: product.orderCode,
-                        url: product.url,
-                        minOrderQuantity: product.minOrderQuantity,
-                        maxOrderQuantity: product.maxOrderQuantity,
-                        orderQuantityInterval: product.orderQuantityInterval,
-                        unit: product.unit,
-                        isConfigurable: product.isConfigurable,
-                        cadSrc: product.cadSrc,
-                        isDataSheetAvailable: product.isDataSheetAvailable,
-                        isRecommendedAccessory: product.isRecommendedAccessory,
-                        imageSrc: product.imageSrc,
-                    });
-                    console.log("🚀 ~ file: productscraping.ts:153 ~ insertAccessoryIntoDatabase ~ response:", response.id)
-                    return response
-                } else {
-                    console.log("Duplicate entry: Product not added.");
-                }
-            }
+        const existingProduct = await pool.query('SELECT * FROM factoryProduct WHERE name = $1', [name]);
+
+        if (existingProduct.rows.length === 0) {
+            const insertResult = await pool.query(factoryProductQuery, [name, permalink, price, categories, images]);
+            const imageUrlPromises = images.map(async (image: string, index: number) => {
+                const imageKey = `products/${insertResult.rows[0].id}/image${index + 1}.jpg`;
+                return uploadImageToS3(image, imageKey);
+            });
+            const imageUrls = await Promise.all(imageUrlPromises);
+
+            await pool.query('UPDATE factoryProduct  SET images = $1 WHERE id = $2', [imageUrls, insertResult.rows[0].id]);
+
+            return insertResult.rows[0];
+        } else {
+            return null;
         }
-    } catch (error) {
+    } catch (error: any) {
         throw error;
     }
 };

@@ -5,7 +5,6 @@ const deleteroutes = express.Router();
 
 deleteroutes.delete("/delete/details/:shortCode", deleteDetail)
 deleteroutes.delete("/delete/:code", deleteProduct)
-// deleteroutes.delete("/delete/details/:shortCode", deleteDetail)
 deleteroutes.delete("/delete/accesiories/:code", deleteAccessiories)
 
 export default deleteroutes;

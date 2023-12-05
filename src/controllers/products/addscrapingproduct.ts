@@ -2,9 +2,11 @@ import axios from "axios";
 import express from "express"
 import { AddFactoryHelpProductDb, insertAccessoryIntoDatabase, insertDetailsOnDb, insertListsOndDb, insertSubCategeoryOnDb, } from "../../models/productscraping";
 import { getListsCode, getPimId, getShortCodesFromDb, } from "./getproductdb";
+
 import { scrapeProducts } from "../../helpers/addproduct";
-const apiKey = "ck_ff83bb9c3517e25c4ba66918a851bfd67d813085";
-const apiSecret = "cs_7e9fd6b2f427175f0812875b3c2811edccca8c81";
+const apiKey = process.env.Api_Key_S3;
+const apiSecret = process.env.API_SECRET_S3;
+
 const baseUrl = "https://factory-ambulance.online/wp-json/wc/v3/products";
 const authHeader = `Basic ${Buffer.from(`${apiKey}:${apiSecret}`).toString("base64")}`;
 

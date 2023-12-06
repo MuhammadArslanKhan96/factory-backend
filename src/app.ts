@@ -11,7 +11,6 @@ require('dotenv').config();
 dotenv.config({
     path: "./.env.local",
 });
-
 const PORT = process.env.PORT
 
 app.use(cors())

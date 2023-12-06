@@ -36,7 +36,15 @@ createTable(
 )
 createTable(
     "factoryProduct",
-    "id SERIAL PRIMARY KEY, name VARCHAR(255),permalink VARCHAR(255) ,price VARCHAR(50),category VARCHAR(255) ARRAY,images VARCHAR(255) ARRAY"
+    `id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    permalink VARCHAR(255) NOT NULL,
+    price NUMERIC(10, 2) NOT NULL,
+    dimensions JSONB,
+    categories VARCHAR(255) ARRAY,
+    images VARCHAR(255) ARRAY,
+    short_description TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP`
 )
 
 createTable(

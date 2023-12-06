@@ -1,12 +1,11 @@
 import axios from "axios";
 import dotenv from "dotenv";
-//@ts-ignore
-dotenv.config("dotenv");
+
+dotenv.config();
+
 const apiKey = process.env.API_KEY_F;
 const apiSecret = process.env.API_SECRET_F;
-// const baseUrl = "https://factory-ambulance.online/wp-json/wc/v3/products";
 const authHeader = `Basic ${Buffer.from(`${apiKey}:${apiSecret}`).toString("base64")}`;
-
 export async function scrapeProducts(url: any) {
     try {
         const response = await axios.get(url, {
@@ -14,19 +13,44 @@ export async function scrapeProducts(url: any) {
                 "Authorization": authHeader,
             },
         });
-        const simplifiedProducts = response.data.map((product: any) => {
+
+        const extractedProducts = response.data.map((product: any) => {
+            const {
+                id,
+                name,
+                permalink,
+                short_description,
+                price,
+                sku,
+                dimensions,
+                weight,
+                categories,
+                images,
+                date_created,
+                date_modified,
+            } = product;
+            const textOnlyDescription = short_description.replace(/<[^>]+>/g, '');
+            const textDescritpion = textOnlyDescription.replace(/\n/g, '');
+
             return {
-                id: product.id,
-                name: product.name,
-                permalink: product.permalink,
-                price: product.price,
-                categories: product.categories.map((category: any) => category.name),
-                images: product.images.map((image: any) => image.src),
+                id,
+                name,
+                permalink,
+                short_description: textDescritpion,
+                price,
+                sku,
+                dimensions,
+                weight,
+                categories: categories.map((category: any) => category.name),
+                images: images.map((image: any) => image.src),
+                date_created,
+                date_modified,
             };
         });
-        console.log(simplifiedProducts);
-        return simplifiedProducts;
+
+        console.log(extractedProducts);
+        return extractedProducts;
     } catch (error: any) {
-        throw new Error("Failed to fetch products");
+        throw error;
     }
 }

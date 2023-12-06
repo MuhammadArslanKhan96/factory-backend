@@ -1,21 +1,33 @@
 import pool from "../db/db";
 import { factoryProductQuery } from "../helpers/queries/products";
 import { uploadImageToS3 } from "../helpers/uploadImage/s3bucket";
-import { FactoryProductCategory } from "../types/product";
 
-export const AddFactoryHelpProductDb = async (product: any) => {
-    const { name, permalink, price, categories, images } = product;
+export const addFactoryHelpProductDb = async (product: any) => {
+    const { name, permalink, price, dimensions, categories, images, short_description } = product;
+    const categoryArray = categories.map((category: any) => category);
+    const imageArray = images.map((image: any) => image);
     try {
         const existingProduct = await pool.query('SELECT * FROM factoryProduct WHERE name = $1', [name]);
+
         if (existingProduct.rows.length === 0) {
-            const insertResult = await pool.query(factoryProductQuery, [name, permalink, price, categories, images]);
+            const insertResult = await pool.query(factoryProductQuery, [
+                name,
+                permalink,
+                price,
+                JSON.stringify(dimensions),
+                categoryArray,
+                imageArray,
+                short_description
+            ]);
+
             const imageUrlPromises = images.map(async (image: string, index: number) => {
                 const imageKey = `products/${insertResult.rows[0].id}/image${index + 1}.jpg`;
                 return uploadImageToS3(image, imageKey);
             });
+
             const imageUrls = await Promise.all(imageUrlPromises);
 
-            await pool.query('UPDATE factoryProduct  SET images = $1 WHERE id = $2', [imageUrls, insertResult.rows[0].id]);
+            await pool.query('UPDATE factoryProduct SET images = $1 WHERE id = $2', [imageUrls, insertResult.rows[0].id]);
 
             console.log('Product added successfully:', insertResult.rows[0]);
             return insertResult.rows[0];
@@ -27,7 +39,6 @@ export const AddFactoryHelpProductDb = async (product: any) => {
         throw error;
     }
 };
-
 export const addFactoryCategeoryModel = async (data: any) => {
     const client = await pool.connect();
     try {

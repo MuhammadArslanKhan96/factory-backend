@@ -19,7 +19,7 @@ export const productDetailsQuerey = ` INSERT INTO productDetails (
 
 export const subCategeory = "INSERT INTO subcategeory ( name, pimId, url, image, src , alt, descriptionElements ) VALUES ($1 ,$2 ,$3 ,$4, $5, $6, $7) RETURNING *"
 export const factoryProductQuery = `
-    INSERT INTO factoryProduct (name, permalink, price, category, images)
-    VALUES ($1, $2, $3, $4, $5)
+    INSERT INTO factoryProduct (name, permalink, price, dimensions, categories, images, short_description)
+    VALUES ($1, $2, $3, $4, $5, $6, $7)
     RETURNING *;
 `;

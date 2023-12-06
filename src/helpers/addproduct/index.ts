@@ -2,8 +2,8 @@ import axios from "axios";
 import dotenv from "dotenv";
 //@ts-ignore
 dotenv.config("dotenv");
-const apiKey = process.env.Api_Key_S3;
-const apiSecret = process.env.API_SECRET_S3;
+const apiKey = process.env.API_KEY_F;
+const apiSecret = process.env.API_SECRET_F;
 // const baseUrl = "https://factory-ambulance.online/wp-json/wc/v3/products";
 const authHeader = `Basic ${Buffer.from(`${apiKey}:${apiSecret}`).toString("base64")}`;
 
@@ -14,7 +14,6 @@ export async function scrapeProducts(url: any) {
                 "Authorization": authHeader,
             },
         });
-
         const simplifiedProducts = response.data.map((product: any) => {
             return {
                 id: product.id,

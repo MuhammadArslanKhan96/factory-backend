@@ -47,4 +47,18 @@ export type ProductDetailsType = {
     isDidactic: boolean;
     shortDescription: string;
 };
-
+export type FactoryProductCategory = {
+    id: number;
+    name: string;
+    slug: string;
+    parent: number;
+    description: string;
+    display: string;
+    menu_order: number;
+    count: number;
+    _links: {
+        self: { href: string }[];
+        collection: { href: string }[];
+        up: { href: string }[];
+    };
+}

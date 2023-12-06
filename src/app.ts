@@ -19,6 +19,7 @@ app.use(express.json())
 app.use("/", addProduct)
 app.use("/", products)
 app.use("/", deleteroutes)
+
 app.get("/.well-known/acme-challenge/zfBjFTW6JJDBKY-loZ8aWEWptnOFLeVdn2DNU2MARCU", (req: any, res: any) => {
     res.send("zfBjFTW6JJDBKY-loZ8aWEWptnOFLeVdn2DNU2MARCU.CYTHMJrGlCx1-hjqEKeAXDFkyw7pIgW6oZImcJGKmJc");
 })

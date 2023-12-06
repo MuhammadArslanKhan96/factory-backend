@@ -1,14 +1,14 @@
 import axios from "axios";
 import express from "express"
-import { AddFactoryHelpProductDb, insertAccessoryIntoDatabase, insertDetailsOnDb, insertListsOndDb, insertSubCategeoryOnDb, } from "../../models/productscraping";
+import dotenv from "dotenv"
+//@ts-ignore
+dotenv.config("dotenv");
+import { insertAccessoryIntoDatabase, insertDetailsOnDb, insertListsOndDb, insertSubCategeoryOnDb, } from "../../models/productscraping";
 import { getListsCode, getPimId, getShortCodesFromDb, } from "./getproductdb";
 
-import { scrapeProducts } from "../../helpers/addproduct";
-const apiKey = process.env.Api_Key_S3;
-const apiSecret = process.env.API_SECRET_S3;
-
-const baseUrl = "https://factory-ambulance.online/wp-json/wc/v3/products";
-const authHeader = `Basic ${Buffer.from(`${apiKey}:${apiSecret}`).toString("base64")}`;
+// const apiKey = process.env.Api_Key_S3;
+// const apiSecret = process.env.API_SECRET_S3;
+// const authHeader = `Basic ${Buffer.from(`${apiKey}:${apiSecret}`).toString("base64")}`;
 
 export const addSubCategory = async (req: express.Request, res: express.Response) => {
     const { baseUrl } = req.body;
@@ -159,8 +159,6 @@ export const addLists = async () => {
 };
 
 
-
-
 export const addAcessiories = async () => {
     try {
         const orderCodes = await getListsCode();
@@ -189,34 +187,3 @@ export const addAcessiories = async () => {
         return { message: "Something went wrong" };
     }
 };
-
-export const addFactoryProduct = async (req: express.Request, res: express.Response) => {
-    const perPage = 100;
-    let page = 1;
-    let allProducts = [] as any;
-    try {
-        while (true) {
-            const apiUrl = `${baseUrl}?page=${page}&per_page=${perPage}`;
-            const productsOnPage = await scrapeProducts(apiUrl);
-
-            if (productsOnPage.length === 0) {
-                break;
-            }
-            for (const product of productsOnPage) {
-                try {
-                    await AddFactoryHelpProductDb(product);
-                } catch (error: any) {
-                    console.error('Error inserting product into the database:', error.message);
-
-                }
-            }
-            allProducts = allProducts.concat(productsOnPage);
-            page++;
-        }
-        res.status(200).json(allProducts);
-    } catch (error: any) {
-        console.error(error.response.data);
-        res.status(500).json({ message: "Server Error" });
-    }
-}
-

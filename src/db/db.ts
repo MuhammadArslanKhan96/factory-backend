@@ -39,4 +39,20 @@ createTable(
     "id SERIAL PRIMARY KEY, name VARCHAR(255),permalink VARCHAR(255) ,price VARCHAR(50),category VARCHAR(255) ARRAY,images VARCHAR(255) ARRAY"
 )
 
+createTable(
+    "factoryCategeory",
+    `id INTEGER,
+    name VARCHAR(255),
+    slug VARCHAR(255),
+    parent INTEGER,
+    description TEXT,
+    display VARCHAR(255),
+    image VARCHAR(255),
+    menu_order INTEGER,
+    count INTEGER,
+    self_href VARCHAR(255),
+    collection_href VARCHAR(255),
+    up_href VARCHAR(255) `
+)
+
 export default pool

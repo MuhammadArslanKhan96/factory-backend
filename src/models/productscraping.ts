@@ -148,31 +148,6 @@ export const insertAccessoryIntoDatabase = async (accessoryData: any) => {
 };
 
 
-export const AddFactoryHelpProductDb = async (product: any) => {
-    const { name, permalink, price, categories, images } = product;
-    try {
-        const existingProduct = await pool.query('SELECT * FROM factoryProduct WHERE name = $1', [name]);
-
-        if (existingProduct.rows.length === 0) {
-            const insertResult = await pool.query(factoryProductQuery, [name, permalink, price, categories, images]);
-            const imageUrlPromises = images.map(async (image: string, index: number) => {
-                const imageKey = `products/${insertResult.rows[0].id}/image${index + 1}.jpg`;
-                return uploadImageToS3(image, imageKey);
-            });
-            const imageUrls = await Promise.all(imageUrlPromises);
-
-            await pool.query('UPDATE factoryProduct  SET images = $1 WHERE id = $2', [imageUrls, insertResult.rows[0].id]);
-
-            console.log('Product added successfully:', insertResult.rows[0]);
-            return insertResult.rows[0];
-        } else {
-            console.log('Duplicate entry: Product not added.');
-            return null;
-        }
-    } catch (error: any) {
-        throw error;
-    }
-};
 
 
 

@@ -81,3 +81,14 @@ export const getFactoryProduct = async (req: express.Request, res: express.Respo
         res.status(500).json({ message: "Server Error" });
     }
 }
+
+export const getFactoryCategeory = async (req: express.Request, res: express.Response) => {
+    try {
+        const response = await pool.query(" SELECT * FROM factoryCategeory")
+        const data = response.rows;
+        res.status(200).json({ meesge: "SubCategeory", data: data });
+        console.log("🚀 ~ file: getproductdb.ts:90 ~ getFactoryCategeory ~ data:", data.length)
+    } catch (error) {
+        res.status(500).json({ message: "Server Error" });
+    }
+}

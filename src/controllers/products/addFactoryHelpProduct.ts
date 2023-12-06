@@ -18,7 +18,6 @@ export const addFactoryProduct = async (req: express.Request, res: express.Respo
     const perPage = 100;
     let page = 1;
     let allProducts = [] as any;
-
     try {
         while (true) {
             const apiUrl = `${baseUrl}?page=${page}&per_page=${perPage}`;
@@ -35,14 +34,13 @@ export const addFactoryProduct = async (req: express.Request, res: express.Respo
                     console.error('Error inserting product into the database:', error.message);
                 }
             }
-
             allProducts = allProducts.concat(productsOnPage);
             page++;
         }
 
         res.status(200).json(allProducts.length);
     } catch (error: any) {
-        console.error(error.response.data);
+        console.error(error);
         res.status(500).json({ message: "Server Error" });
     }
 }

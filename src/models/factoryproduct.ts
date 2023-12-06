@@ -29,7 +29,7 @@ export const addFactoryHelpProductDb = async (product: any) => {
 
             await pool.query('UPDATE factoryProduct SET images = $1 WHERE id = $2', [imageUrls, insertResult.rows[0].id]);
 
-            console.log('Product added successfully:', insertResult.rows[0]);
+            console.log('Product added successfully:', insertResult.rows[0].id);
             return insertResult.rows[0];
         } else {
             console.log('Duplicate entry: Product not added.');

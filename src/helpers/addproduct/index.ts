@@ -31,7 +31,6 @@ export async function scrapeProducts(url: any) {
             } = product;
             const textOnlyDescription = short_description.replace(/<[^>]+>/g, '');
             const textDescritpion = textOnlyDescription.replace(/\n/g, '');
-
             return {
                 id,
                 name,
@@ -48,7 +47,7 @@ export async function scrapeProducts(url: any) {
             };
         });
 
-        console.log(extractedProducts);
+        console.log(extractedProducts.id);
         return extractedProducts;
     } catch (error: any) {
         throw error;

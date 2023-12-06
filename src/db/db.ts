@@ -39,7 +39,7 @@ createTable(
     `id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     permalink VARCHAR(255) NOT NULL,
-    price NUMERIC(10, 2) NOT NULL,
+    price VARCHAR NULL,
     dimensions JSONB,
     categories VARCHAR(255) ARRAY,
     images VARCHAR(255) ARRAY,

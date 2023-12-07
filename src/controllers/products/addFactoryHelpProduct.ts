@@ -1,8 +1,8 @@
 import axios from "axios";
-import { scrapeProducts } from "../../helpers/addproduct";
+import { scrapeProducts, scrapeProducts2 } from "../../helpers/addproduct";
 import express from "express";
 import dotenv from "dotenv"
-import { addFactoryCategeoryModel, addFactoryHelpProductDb } from "../../models/factoryproduct";
+import { addAlldata, addFactoryCategeoryModel, addFactoryHelpProductDb } from "../../models/factoryproduct";
 //@ts-ignore
 dotenv.config("dotenv");
 
@@ -44,6 +44,38 @@ export const addFactoryProduct = async (req: express.Request, res: express.Respo
         res.status(500).json({ message: "Server Error" });
     }
 }
+
+export const addAllProduct = async (req: express.Request, res: express.Response) => {
+    const perPage = 100;
+    let page = 1;
+    let allProducts = [] as any;
+
+    try {
+        while (true) {
+            const apiUrl = `${baseUrl}?page=${page}&per_page=${perPage}`;
+            const productsOnPage = await scrapeProducts2(apiUrl);
+
+            if (productsOnPage.length === 0) {
+                break;
+            }
+            for (const product of productsOnPage) {
+                try {
+                    await addAlldata(product);
+                } catch (error: any) {
+                    console.error('Error inserting product into the database:', error.message);
+                }
+            }
+            allProducts = allProducts.concat(productsOnPage);
+            page++;
+        }
+
+        res.status(200).json(allProducts.length);
+    } catch (error: any) {
+        console.error(error);
+        res.status(500).json({ message: "Server Error" });
+    }
+}
+
 
 
 export const getProductDetails = async (req: express.Request, res: express.Response) => {

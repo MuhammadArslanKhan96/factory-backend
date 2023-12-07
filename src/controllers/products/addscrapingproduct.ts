@@ -116,8 +116,8 @@ export const addLists = async () => {
             let currentPage = 0;
             while (true) {
                 try {
-                    const url = `${baseUrl}?page=${currentPage}`;
-                    const response = await axios.get(url, {
+                    // const url = `${baseUrl}?page=${currentPage}`;
+                    const response = await axios.get(baseUrl, {
                         headers: {
                             "Cookie": "LastSite=gb-en-001; JHYSESSIONID=Y14-fe3a42fd-9068-40c6-9a33-f00f93d7b72b; ROUTE=.accstorefront-595b85f95c-5d28z",
                             "Cache-Control": "no-cache",
@@ -127,6 +127,7 @@ export const addLists = async () => {
                             "Connection": "keep-alive",
                         },
                     });
+
                     const productList = response.data.productList as string[];
 
                     if (productList.length === 0) {

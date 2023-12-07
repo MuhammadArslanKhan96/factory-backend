@@ -35,6 +35,100 @@ createTable(
     "id SERIAL PRIMARY KEY,name VARCHAR(255) NOT NULL,pimId VARCHAR(50) NOT NULL , url VARCHAR(255) NOT NULL, image_src VARCHAR(255) NOT NULL,image_alt VARCHAR(255) NOT NULL,description_elements TEXT"
 )
 createTable(
+    "factoryProductsAll",
+    `id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    slug  VARCHAR NULL,
+    permalink VARCHAR(255) NOT NULL,
+    price VARCHAR NULL,
+    dimensions JSONB,
+    categories VARCHAR  NULL,
+    images VARCHAR NULL,
+    short_description TEXT, 
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    date_created VARCHAR NULL,
+    date_created_gmt VARCHAR NULL,
+    date_modified VARCHAR NULL,
+    date_modified_gmt VARCHAR NULL,
+    type VARCHAR NULL,
+    status VARCHAR NULL,
+    featured VARCHAR NULL,
+    catalog_visibility VARCHAR NULL,
+    description VARCHAR NULL,
+    regular_price VARCHAR NULL,
+    sale_price VARCHAR NULL,
+    date_on_sale_from VARCHAR NULL,
+    sku VARCHAR NULL, 
+    date_on_sale_from_gmt VARCHAR NULL,
+    date_on_sale_to VARCHAR NULL,
+    date_on_sale_to_gmt VARCHAR NULL,
+    on_sale VARCHAR NULL,
+    purchasable VARCHAR NULL,
+    total_sales  VARCHAR NULL,
+    virtual VARCHAR NULL,
+    downloadable VARCHAR NULL,
+    downloads VARCHAR NULL,
+    download_limit  VARCHAR NULL,
+    download_expiry  VARCHAR NULL,
+    external_url  VARCHAR NULL,
+    button_text VARCHAR NULL,
+    tax_status VARCHAR NULL,
+    tax_class VARCHAR NULL,
+    manage_stock VARCHAR NULL,
+    stock_quantity VARCHAR NULL,
+    backorders VARCHAR NULL,
+    backorders_allowed VARCHAR NULL,
+    backordered VARCHAR NULL,
+    low_stock_amount VARCHAR NULL,
+    sold_individually VARCHAR NULL,
+    weight VARCHAR NULL,
+    shipping_required VARCHAR NULL,
+    shipping_taxable VARCHAR NULL,
+    shipping_class VARCHAR NULL,
+    shipping_class_id VARCHAR NULL,
+    average_rating  VARCHAR NULL,
+    reviews_allowed VARCHAR NULL,
+    rating_count VARCHAR NULL,
+    upsell_ids VARCHAR NULL,
+    cross_sell_ids VARCHAR NULL,
+     parent_id VARCHAR NULL,
+    purchase_note VARCHAR NULL,
+    tags VARCHAR NULL,
+    attributes VARCHAR NULL,
+    default_attributes VARCHAR NULL,
+    variations VARCHAR NULL,
+    grouped_products VARCHAR NULL,
+    menu_order VARCHAR NULL,
+    price_html VARCHAR NULL,
+    related_ids VARCHAR NULL,
+    meta_data VARCHAR NULL,
+    stock_status VARCHAR NULL,
+    has_options VARCHAR NULL,
+    _links VARCHAR NULL`
+)
+
+
+
+
+createTable(
+    "factoryCategeory",
+    `id INTEGER,
+    name VARCHAR(255),
+    descritpion VARCHAR NULL,
+    slug VARCHAR(255),
+    parent INTEGER,
+    sku VARCHAR NULL,
+    description TEXT,
+    display VARCHAR(255),
+    image VARCHAR(255),
+    menu_order INTEGER,
+    count INTEGER,
+    self_href VARCHAR(255),
+    collection_href VARCHAR(255),
+    up_href VARCHAR(255) `
+)
+
+createTable(
     "factoryProduct",
     `id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
@@ -45,22 +139,6 @@ createTable(
     images VARCHAR(255) ARRAY,
     short_description TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP`
-)
-
-createTable(
-    "factoryCategeory",
-    `id INTEGER,
-    name VARCHAR(255),
-    slug VARCHAR(255),
-    parent INTEGER,
-    description TEXT,
-    display VARCHAR(255),
-    image VARCHAR(255),
-    menu_order INTEGER,
-    count INTEGER,
-    self_href VARCHAR(255),
-    collection_href VARCHAR(255),
-    up_href VARCHAR(255) `
 )
 
 export default pool

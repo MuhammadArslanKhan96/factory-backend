@@ -13,7 +13,6 @@ export async function scrapeProducts(url: any) {
                 "Authorization": authHeader,
             },
         });
-
         const extractedProducts = response.data.map((product: any) => {
             const {
                 id,

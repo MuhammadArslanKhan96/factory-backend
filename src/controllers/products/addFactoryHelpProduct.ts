@@ -18,6 +18,7 @@ export const addFactoryProduct = async (req: express.Request, res: express.Respo
     const perPage = 100;
     let page = 1;
     let allProducts = [] as any;
+
     try {
         while (true) {
             const apiUrl = `${baseUrl}?page=${page}&per_page=${perPage}`;
@@ -26,7 +27,6 @@ export const addFactoryProduct = async (req: express.Request, res: express.Respo
             if (productsOnPage.length === 0) {
                 break;
             }
-
             for (const product of productsOnPage) {
                 try {
                     await addFactoryHelpProductDb(product);

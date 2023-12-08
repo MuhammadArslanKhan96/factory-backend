@@ -5,6 +5,7 @@ import {
     getDetailsInDb,
     getFactoryCategeory,
     getFactoryProduct,
+    getFactoryProductById,
     getFactoryProductsPerPage,
     getListsInDb,
     getShortCodesFromDb,
@@ -25,7 +26,7 @@ products.get("/get/categeory", getFactoryCategeory)
 products.get("/get/details", getProductDetails)
 products.get("/get/product/:page", getFactoryProductsPerPage)
 products.get('/product/:query', searchProduct);
-// products.get("/get/:id", getFactoryProductById);
+products.get("/get/:id", getFactoryProductById);
 products.get("/get/allproduct", getAllProduct)
 
 export default products;

@@ -219,8 +219,9 @@ export async function scrapeProducts2(url: any) {
                 _links,
             };
         });
-
         console.log(extractedProducts.id);
+        const productsWithEmptySku = extractedProducts.filter(product => product.sku !== undefined && product.sku.trim() === '');
+        console.log("Number of products with empty SKU:", productsWithEmptySku.length);
         return extractedProducts;
     } catch (error: any) {
         throw error;

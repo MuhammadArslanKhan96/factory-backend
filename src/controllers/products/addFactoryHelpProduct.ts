@@ -49,7 +49,6 @@ export const addAllProduct = async (req: express.Request, res: express.Response)
     const perPage = 100;
     let page = 1;
     let allProducts = [] as any;
-
     try {
         while (true) {
             const apiUrl = `${baseUrl}?page=${page}&per_page=${perPage}`;
@@ -68,7 +67,6 @@ export const addAllProduct = async (req: express.Request, res: express.Response)
             allProducts = allProducts.concat(productsOnPage);
             page++;
         }
-
         res.status(200).json(allProducts.length);
     } catch (error: any) {
         console.error(error);

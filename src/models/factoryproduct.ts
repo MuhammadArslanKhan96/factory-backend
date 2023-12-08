@@ -184,7 +184,7 @@ export const addAlldata = async (product: any) => {
             const imageUrlPromises = images.map(async (image: string, index: number) => {
                 const imageKey = `products/${insertResult.rows[0].id}/image${index + 1}.jpg`;
                 //@ts-ignore
-                return uploadImageToS3(image.src, imageKey);
+                // return uploadImageToS3(image.src, imageKey);
             });
 
             const imageUrls = await Promise.all(imageUrlPromises);

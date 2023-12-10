@@ -42,8 +42,8 @@ createTable(
     permalink VARCHAR(255) NOT NULL,
     price VARCHAR NULL,
     dimensions JSONB,
-    categories VARCHAR  NULL,
-    images VARCHAR NULL,
+    categories jsonb[]  NULL,
+    images jsonb[]  NULL,
     short_description TEXT, 
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     date_created VARCHAR NULL,
@@ -67,7 +67,7 @@ createTable(
     total_sales  VARCHAR NULL,
     virtual VARCHAR NULL,
     downloadable VARCHAR NULL,
-    downloads VARCHAR NULL,
+    downloads  jsonb[]  NULL ,
     download_limit  VARCHAR NULL,
     download_expiry  VARCHAR NULL,
     external_url  VARCHAR NULL,
@@ -89,26 +89,23 @@ createTable(
     average_rating  VARCHAR NULL,
     reviews_allowed VARCHAR NULL,
     rating_count VARCHAR NULL,
-    upsell_ids VARCHAR NULL,
-    cross_sell_ids VARCHAR NULL,
+    upsell_ids jsonb[]  NULL,
+    cross_sell_ids jsonb[]  NULL,
      parent_id VARCHAR NULL,
     purchase_note VARCHAR NULL,
-    tags VARCHAR NULL,
-    attributes VARCHAR NULL,
-    default_attributes VARCHAR NULL,
-    variations VARCHAR NULL,
-    grouped_products VARCHAR NULL,
+    tags jsonb[]  NULL,
+    attributes jsonb[]  NULL,
+    default_attributes jsonb[]  NULL,
+    variations jsonb[]  NULL,
+    grouped_products jsonb[]  NULL,
     menu_order VARCHAR NULL,
     price_html VARCHAR NULL,
-    related_ids VARCHAR NULL,
-    meta_data VARCHAR NULL,
+    related_ids JSONB NULL,
+    meta_data JSONB NULL,
     stock_status VARCHAR NULL,
     has_options VARCHAR NULL,
-    _links VARCHAR NULL`
+    _links JSONB`
 )
-
-
-
 
 createTable(
     "factoryCategeory",

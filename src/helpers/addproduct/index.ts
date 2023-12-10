@@ -138,29 +138,18 @@ export async function scrapeProducts2(url: any) {
                 has_options,
                 _links,
             } = product;
-            const textOnlyDescription = short_description.replace(/<[^>]+>/g, '');
-            const textDescritpion = textOnlyDescription.replace(/\n/g, '');
             return {
                 id,
                 name,
                 slug,
                 permalink,
-                short_description: textDescritpion,
+                short_description,
                 price,
                 sku,
                 dimensions,
                 weight,
-                categories: categories.map((category: any) => ({
-                    id: category.id,
-                    name: category.name,
-                    slug: category.slug,
-                })),
-                images: images.map((image: any) => ({
-                    id: image.id,
-                    src: image.src,
-                    name: image.src,
-                    alt: image.alt
-                })),
+                categories: categories.map((category: any) => category),
+                images: images.map((category: any) => category),
                 date_created,
                 date_created_gmt,
                 date_modified,
@@ -227,3 +216,4 @@ export async function scrapeProducts2(url: any) {
         throw error;
     }
 }
+

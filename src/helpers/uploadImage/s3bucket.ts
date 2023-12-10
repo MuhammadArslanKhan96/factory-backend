@@ -15,23 +15,25 @@ AWS.config.update({
 const s3 = new AWS.S3();
 const bucketName = 'factoryhelp-backend';
 
-export const uploadImageToS3 = async (imageUrl: string, key: string): Promise<string> => {
+export const uploadImageToS3 = async (imageUrl: any, key: any) => {
     try {
+        // Fetch the image from the URL using Axios
         const response = await axios.get(imageUrl, { responseType: 'arraybuffer' });
         const fileContent = Buffer.from(response.data, 'binary');
 
-        await s3.upload({
+        // Upload the image to S3
+        const result = await s3.upload({
             Bucket: bucketName,
             Key: key,
             Body: fileContent,
-            ACL: 'public-read',
+            ACL: 'public-read', // Set ACL to public-read for public access
         }).promise();
 
+        // Construct the URL of the uploaded image
         const uploadedImageUrl = `https://${bucketName}.s3.amazonaws.com/${key}`;
         return uploadedImageUrl;
     } catch (error) {
+        console.error('Error uploading to S3:', error);
         throw error;
     }
 };
-
-

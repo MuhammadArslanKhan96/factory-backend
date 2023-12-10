@@ -1,7 +1,8 @@
 import pool from "../db/db";
 import { allFactoryProduct, factoryProductQuery } from "../helpers/queries/products";
 
-import { uploadImageToS3 } from "../helpers/uploadImage/s3bucket"; export const addFactoryHelpProductDb = async (product: any) => {
+import { uploadImageToS3 } from "../helpers/uploadImage/s3bucket";
+export const addFactoryHelpProductDb = async (product: any) => {
     const { name, permalink, price, dimensions, categories, images, short_description } = product;
     const categoryArray = categories.map((category: any) => category);
     const imageArray = images.map((image: any) => image);
@@ -37,8 +38,7 @@ import { uploadImageToS3 } from "../helpers/uploadImage/s3bucket"; export const 
     } catch (error: any) {
         throw error;
     }
-};
-
+}
 
 export const addAlldata = async (product: any) => {
     const { name, slug, permalink, price, dimensions, categories, images, short_description, date_created,
@@ -101,12 +101,14 @@ export const addAlldata = async (product: any) => {
         _links,
         sku
     } = product;
+
     if (!sku || sku.trim() === '') {
         console.log('SKU is empty. Product not added.');
         return null;
     }
+
     const categoryArray = categories.map((category: any) => category);
-    const imageArray = images.map((image: any) => image);
+    const image = images.map((image2: any) => image2)
     try {
         const existingProduct = await pool.query('SELECT * FROM factoryProductsAll WHERE name = $1', [name]);
         if (existingProduct.rows.length === 0) {
@@ -117,7 +119,7 @@ export const addAlldata = async (product: any) => {
                 price,
                 JSON.stringify(dimensions),
                 categoryArray,
-                imageArray,
+                image,
                 short_description,
                 date_created,
                 date_created_gmt,
@@ -172,24 +174,27 @@ export const addAlldata = async (product: any) => {
                 grouped_products,
                 menu_order,
                 price_html,
-                related_ids,
-                meta_data,
+                JSON.stringify(related_ids),
+                JSON.stringify(meta_data),
                 stock_status,
                 has_options,
-                _links,
+                JSON.stringify(_links),
                 sku
-                ,
             ]);
-
             const imageUrlPromises = images.map(async (image: string, index: number) => {
                 const imageKey = `products/${insertResult.rows[0].id}/image${index + 1}.jpg`;
                 //@ts-ignore
-                // return uploadImageToS3(image.src, imageKey);
+                const imageUrl = await uploadImageToS3(image.src, imageKey);
+                return {
+                    //@ts-ignore
+                    ...image,
+                    src: imageUrl,
+                };
             });
 
-            const imageUrls = await Promise.all(imageUrlPromises);
+            const updatedImages = await Promise.all(imageUrlPromises);
 
-            await pool.query('UPDATE factoryProductsAll SET images = $1 WHERE id = $2', [imageUrls, insertResult.rows[0].id]);
+            await pool.query('UPDATE factoryProductsAll SET images = $1 WHERE id = $2', [updatedImages, insertResult.rows[0].id]);
 
             console.log('Product added successfully:', insertResult.rows[0].id);
             return insertResult.rows[0];

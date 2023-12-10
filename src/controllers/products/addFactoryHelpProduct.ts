@@ -53,10 +53,10 @@ export const addAllProduct = async (req: express.Request, res: express.Response)
         while (true) {
             const apiUrl = `${baseUrl}?page=${page}&per_page=${perPage}`;
             const productsOnPage = await scrapeProducts2(apiUrl);
-
             if (productsOnPage.length === 0) {
                 break;
             }
+
             for (const product of productsOnPage) {
                 try {
                     await addAlldata(product);
@@ -73,8 +73,6 @@ export const addAllProduct = async (req: express.Request, res: express.Response)
         res.status(500).json({ message: "Server Error" });
     }
 }
-
-
 
 export const getProductDetails = async (req: express.Request, res: express.Response) => {
     const productName = "multitask-photoelectric-sensorspowerprox-10/";
@@ -131,3 +129,19 @@ export const addFactoryCategeory = async (req: express.Request, res: express.Res
 //     }
 // }
 
+
+export const check = async (req: express.Request, res: express.Response) => {
+    const baseUrl = "https://help-factory.com/wp-json/wc/v3/products";
+    try {
+        const response = await axios.get(baseUrl, {
+            headers: {
+                "Authorization": authHeader,
+            },
+        });
+        const data = response.data as string[]
+        // const res2 = addAlldata(data);
+        res.json(data);
+    } catch (error) {
+
+    }
+}

@@ -82,6 +82,7 @@ export const getFactoryProduct = async (req: express.Request, res: express.Respo
         res.status(500).json({ message: "Server Error" });
     }
 }
+
 export const getAllProduct = async (req: express.Request, res: express.Response) => {
     try {
         const response = await pool.query(" SELECT * FROM  factoryProductsAll")
@@ -94,7 +95,6 @@ export const getAllProduct = async (req: express.Request, res: express.Response)
         res.status(500).json({ message: "Server Error" });
     }
 }
-
 
 export const getFactoryProductsPerPage = async (req: express.Request, res: express.Response) => {
     try {
@@ -119,8 +119,8 @@ export const getFactoryProductsPerPage = async (req: express.Request, res: expre
         const countQuery = 'SELECT COUNT(*) FROM factoryProductsAll';
         const countResponse = await pool.query(countQuery);
         const totalCount = countResponse.rows[0].count;
+        res.status(200).send({ message: `Products for page ${page}`, data: data, total: totalCount });
 
-        res.status(200).json({ message: `Products for page ${page}`, data: data, total: totalCount });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Server Error" });
@@ -142,19 +142,25 @@ export const getFactoryCategeory = async (req: express.Request, res: express.Res
 }
 
 export const getFactoryProductById = async (req: express.Request, res: express.Response) => {
-    const { id } = req.params
+    const { id } = req.params;
+    const productId = parseInt(id, 10);
+    if (isNaN(productId)) {
+        return res.status(400).json({ message: "Invalid product ID" });
+    }
     try {
-        const response = await pool.query("SELECT *  FROM  factoryProductsAll WHERE id = $1 ", [id]);
+        const response = await pool.query("SELECT * FROM factoryProductsAll WHERE id = $1", [productId]);
+
         if (response.rows.length === 0) {
-            return res.status(401).json({ message: "Product Does Not Found" });
+            return res.status(404).json({ message: "Product not found" });
         }
         const product = response.rows[0];
-        res.status(200).json({ message: "Product Get Sucessfully", data: product })
+        res.status(200).json({ message: "Product retrieved successfully", data: product });
     } catch (error) {
-        console.log("🚀 ~ file: getproductdb.ts:126 ~ getFactoryProductById ~ error:", error);
+        console.log("Error:", error);
         res.status(500).json({ message: "Server Error" });
     }
-}
+};
+
 
 export const searchProduct = async (req: express.Request, res: express.Response) => {
     try {

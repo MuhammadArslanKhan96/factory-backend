@@ -5,6 +5,8 @@ import dotenv from "dotenv"
 dotenv.config("dotenv");
 import { insertAccessoryIntoDatabase, insertDetailsOnDb, insertListsOndDb, insertSubCategeoryOnDb, } from "../../models/productscraping";
 import { getListsCode, getPimId, getShortCodesFromDb, } from "./getproductdb";
+import * as xlsx from 'xlsx';
+import { uploadImageToS3 } from "../../helpers/uploadImage/s3bucket";
 
 // const apiKey = process.env.Api_Key_S3;
 // const apiSecret = process.env.API_SECRET_S3;
@@ -160,31 +162,65 @@ export const addLists = async () => {
 };
 
 
-export const addAcessiories = async () => {
+// export const addAcessiories = async () => {
+//     try {
+//         const orderCodes = await getListsCode();
+
+//         const responses = await Promise.all(
+//             orderCodes.map(async (orderCode) => {
+//                 const url = `https://www.festo.com/gb/en/json/articles/${orderCode}/accessories/?recommendedAccessories=false`;
+//                 console.log("🚀 ~ file: addscrapingproduct.ts:125 ~ orderCodes.map ~ url:", url);
+//                 const response = await axios.get(url, {
+//                     headers: {
+//                         "Cookie": "LastSite=gb-en-001; JHYSESSIONID=Y14-fe3a42fd-9068-40c6-9a33-f00f93d7b72b; ROUTE=.accstorefront-595b85f95c-5d28z",
+//                         "Cache-Control": "no-cache",
+//                         "User-Agent": "Your-User-Agent",
+//                         "Accept": "*/*",
+//                         "Accept-Encoding": "gzip, deflate, br",
+//                         "Connection": "keep-alive",
+//                     },
+//                 });
+//                 await insertAccessoryIntoDatabase(response.data);
+//                 return response.data;
+//             })
+//         );
+
+//         return { responses };
+//     } catch (error) {
+//         return { message: "Something went wrong" };
+//     }
+// };
+
+
+
+
+export const addAccessories = async (req: express.Request, res: express.Response) => {
+    const baseUrl = "https://www.festo.com/gb/en/json/articles/569800/accessories/?recommendedAccessories=false";
+
     try {
-        const orderCodes = await getListsCode();
+        const response = await axios.get(baseUrl, {
+            headers: {
+                "Cookie": "LastSite=gb-en-001; JHYSESSIONID=Y14-fe3a42fd-9068-40c6-9a33-f00f93d7b72b; ROUTE=.accstorefront-595b85f95c-5d28z",
+                "Cache-Control": "no-cache",
+                "User-Agent": "Your-User-Agent",
+                "Accept": "*/*",
+                "Accept-Encoding": "gzip, deflate, br",
+                "Connection": "keep-alive",
+            }
+        });
 
-        const responses = await Promise.all(
-            orderCodes.map(async (orderCode) => {
-                const url = `https://www.festo.com/gb/en/json/articles/${orderCode}/accessories/?recommendedAccessories=false`;
-                console.log("🚀 ~ file: addscrapingproduct.ts:125 ~ orderCodes.map ~ url:", url);
-                const response = await axios.get(url, {
-                    headers: {
-                        "Cookie": "LastSite=gb-en-001; JHYSESSIONID=Y14-fe3a42fd-9068-40c6-9a33-f00f93d7b72b; ROUTE=.accstorefront-595b85f95c-5d28z",
-                        "Cache-Control": "no-cache",
-                        "User-Agent": "Your-User-Agent",
-                        "Accept": "*/*",
-                        "Accept-Encoding": "gzip, deflate, br",
-                        "Connection": "keep-alive",
-                    },
-                });
-                await insertAccessoryIntoDatabase(response.data);
-                return response.data;
-            })
-        );
-
-        return { responses };
+        const products = await response.data.accessoryList as any[];
+        const allProductLists = products.map((category: any) => category.productList).flat();
+        const key = "https://factoryhelp"
+        const image = allProductLists.map(item => uploadImageToS3(item.imageSrc, key))
+        // const ws = xlsx.utils.json_to_sheet(allProductLists);
+        // const wb = xlsx.utils.book_new();
+        // xlsx.utils.book_append_sheet(wb, ws, 'Sheet 1');
+        // xlsx.writeFile(wb, 'products.csv');
+        res.send(image);
     } catch (error) {
-        return { message: "Something went wrong" };
+        console.log("🚀 ~ file: addscrapingproduct.ts:199 ~ addAccessories ~ error:", error);
+        res.status(500).send("Internal Server Error");
     }
 };
+

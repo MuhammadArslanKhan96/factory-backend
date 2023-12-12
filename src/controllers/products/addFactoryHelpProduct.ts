@@ -119,29 +119,3 @@ export const addFactoryCategeory = async (req: express.Request, res: express.Res
     }
 };
 
-
-// export const ProductAttribute = async (req: express.Request, res: express.Response) => {
-//     let baseUrlAttribute = ""
-//     try {
-//         const response = await axios.get()
-//     } catch (error) {
-
-//     }
-// }
-
-
-export const check = async (req: express.Request, res: express.Response) => {
-    const baseUrl = "https://help-factory.com/wp-json/wc/v3/products";
-    try {
-        const response = await axios.get(baseUrl, {
-            headers: {
-                "Authorization": authHeader,
-            },
-        });
-        const data = response.data as string[]
-        // const res2 = addAlldata(data);
-        res.json(data);
-    } catch (error) {
-
-    }
-}

@@ -1,14 +1,13 @@
 import express from "express";
-import { addAccessories, addDetailsDb, addLists, addSubCategory } from "../controllers/products/addscrapingproduct";
-import { addAllProduct, addFactoryProduct, check } from "../controllers/products/addFactoryHelpProduct";
+import { addDetailsDb, addLists, addSubCategory } from "../controllers/products/addscrapingproduct";
+import { addAllProduct, addFactoryProduct, } from "../controllers/products/addFactoryHelpProduct";
+import { FestoProduct } from "../controllers/products/festo";
 const addProduct = express.Router();
 
 addProduct.get("/add/lists", addLists);
 addProduct.post("/add/subCategeory", addSubCategory);
 addProduct.get("/add/details", addDetailsDb);
-addProduct.get("/add/acessories", addAccessories);
+addProduct.get("/add/festo", FestoProduct)
 addProduct.get("/add/factoryproduct", addFactoryProduct)
-// addProduct.get("/add/categeory", addFactoryCategeory);
 addProduct.get("/add/alldata", addAllProduct)
-addProduct.get("/check", check)
 export default addProduct;

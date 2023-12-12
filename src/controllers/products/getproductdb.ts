@@ -33,10 +33,10 @@ export const getAllAccessoriesInDb = async (req: express.Request, res: express.R
     }
 };
 
-export const getListsCode = async () => {
+export const getUrlCode = async () => {
     try {
-        const result = await pool.query('SELECT code FROM productLists');
-        return result.rows.map(row => row.code);
+        const result = await pool.query('SELECT url FROM productLists');
+        return result.rows.map(row => row.url);
     } catch (error) {
         throw error;
     }
@@ -47,6 +47,15 @@ export const getSubCategeory = async (req: express.Request, res: express.Respons
         const response = await pool.query("SELECT * FROM subcategeory")
         const data = response.rows;
         res.status(200).json(data);
+    } catch (error) {
+        res.json({ message: "Server Error" })
+    }
+}
+export const getfestoProducts = async (req: express.Request, res: express.Response) => {
+    try {
+        const response = await pool.query("SELECT * FROM festoMetaData")
+        const data = response.rows;
+        res.status(200).json({ message: "Product get Sucessfully", data: data });
     } catch (error) {
         res.json({ message: "Server Error" })
     }
@@ -72,6 +81,7 @@ export const getShortCodesFromDb = async () => {
         throw error
     }
 };
+
 
 export const getFactoryProduct = async (req: express.Request, res: express.Response) => {
     try {
@@ -127,6 +137,36 @@ export const getFactoryProductsPerPage = async (req: express.Request, res: expre
     }
 };
 
+export const getFestoProductsPerPage = async (req: express.Request, res: express.Response) => {
+    try {
+        const perPage = 100;
+        let { page } = req.params as any;
+
+        page = parseInt(page);
+        if (isNaN(page) || page < 1) {
+            return res.status(400).json({ message: "Invalid page number" });
+        }
+
+        const offset = (page - 1) * perPage;
+
+        const dataQuery = {
+            text: 'SELECT * FROM productLists ORDER BY id LIMIT $1 OFFSET $2',
+            values: [perPage, offset],
+        };
+
+        const dataResponse = await pool.query(dataQuery);
+        const data = dataResponse.rows;
+
+        const countQuery = 'SELECT COUNT(*) FROM productLists';
+        const countResponse = await pool.query(countQuery);
+        const totalCount = countResponse.rows[0].count;
+        res.status(200).send({ message: `Products for page ${page}`, total: totalCount, data: data, });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Server Error" });
+    }
+};
 
 
 
@@ -176,3 +216,74 @@ export const searchProduct = async (req: express.Request, res: express.Response)
         res.status(500).json({ message: 'Server Error' });
     }
 }
+
+export const searchProductFesto = async (req: express.Request, res: express.Response) => {
+    try {
+        const { query } = req.params;
+        const searchResults = await pool.query(
+            'SELECT *  FROM  productLists  WHERE name = $1',
+            [query]
+        );
+        res.status(200).json({ data: searchResults.rows });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+}
+
+export const getFestoProductByCode = async (req: express.Request, res: express.Response) => {
+    try {
+        const { code } = req.params;
+
+        const query = `
+            SELECT * FROM festoMetaData
+            WHERE code = $1
+        `;
+
+        const values = [code];
+
+        const result = await pool.query(query, values);
+
+        if (result.rows.length > 0) {
+            const product = result.rows[0];
+            res.send({ product });
+        } else {
+            res.status(404).send({ message: "Product not found" });
+        }
+    } catch (error) {
+        console.error('Error retrieving product by code:', error);
+        res.status(500).send({ message: "Server Error" });
+    }
+};
+
+export const getListByCode = async (req: express.Request, res: express.Response) => {
+    try {
+        const { code } = req.params;
+        const query = `
+            SELECT * FROM productLists
+            WHERE code = $1
+        `;
+        const values = [code];
+
+        const result = await pool.query(query, values);
+
+        if (result.rows.length > 0) {
+            const product = result.rows[0];
+            res.send({ product });
+        } else {
+            res.status(404).send({ message: "Product not found" });
+        }
+    } catch (error) {
+        console.error('Error retrieving product by code:', error);
+        res.status(500).send({ message: "Server Error" });
+    }
+};
+
+export const getListCode = async () => {
+    try {
+        const result = await pool.query('SELECT code FROM productLists');
+        return result.rows.map(row => row.code);
+    } catch (error) {
+        throw error;
+    }
+};

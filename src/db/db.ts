@@ -137,5 +137,21 @@ createTable(
     short_description TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP`
 )
+createTable(
+    "festoMetaData",
+    `id SERIAL PRIMARY KEY,
+    code VARCHAR(255),
+    GTIN VARCHAR(255),
+    pdf TEXT,
+    technicalData TEXT,
+    reliabilityDatasheet TEXT,
+    spareParts TEXT,
+    price VARCHAR(255),
+    accessories JSONB,
+    technicalDataDetails TEXT,
+    images JSONB`
+)
+
+
 
 export default pool

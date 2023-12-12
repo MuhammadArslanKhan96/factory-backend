@@ -108,7 +108,6 @@ export const addAlldata = async (product: any) => {
     }
 
     const categoryArray = categories.map((category: any) => category);
-    const image = images.map((image2: any) => image2)
     try {
         const existingProduct = await pool.query('SELECT * FROM factoryProductsAll WHERE name = $1', [name]);
         if (existingProduct.rows.length === 0) {
@@ -119,7 +118,7 @@ export const addAlldata = async (product: any) => {
                 price,
                 JSON.stringify(dimensions),
                 categoryArray,
-                image,
+                images,
                 short_description,
                 date_created,
                 date_created_gmt,

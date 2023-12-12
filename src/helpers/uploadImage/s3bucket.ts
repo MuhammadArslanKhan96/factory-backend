@@ -17,19 +17,26 @@ const bucketName = 'factoryhelp-backend';
 
 export const uploadImageToS3 = async (imageUrl: any, key: any) => {
     try {
-        // Fetch the image from the URL using Axios
-        const response = await axios.get(imageUrl, { responseType: 'arraybuffer' });
+        const response = await axios.get(imageUrl, {
+            headers: {
+                "Cookie": "LastSite=gb-en-001; JHYSESSIONID=Y14-fe3a42fd-9068-40c6-9a33-f00f93d7b72b; ROUTE=.accstorefront-595b85f95c-5d28z",
+                "Cache-Control": "no-cache",
+                "User-Agent": "Your-User-Agent",
+                "Accept": "*/*",
+                "Accept-Encoding": "gzip, deflate, br",
+                "Connection": "keep-alive",
+            },
+            responseType: 'arraybuffer'
+        });
         const fileContent = Buffer.from(response.data, 'binary');
 
-        // Upload the image to S3
         const result = await s3.upload({
             Bucket: bucketName,
             Key: key,
             Body: fileContent,
-            ACL: 'public-read', // Set ACL to public-read for public access
+            ACL: 'public-read',
         }).promise();
 
-        // Construct the URL of the uploaded image
         const uploadedImageUrl = `https://${bucketName}.s3.amazonaws.com/${key}`;
         return uploadedImageUrl;
     } catch (error) {

@@ -149,7 +149,7 @@ export async function scrapeProducts2(url: any) {
                 dimensions,
                 weight,
                 categories: categories.map((category: any) => category),
-                images: images.map((category: any) => category),
+                images,
                 date_created,
                 date_created_gmt,
                 date_modified,

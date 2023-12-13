@@ -9,11 +9,12 @@ export const insertSubCategeoryOnDb = async (dataToInsert: any) => {
             const { pimId } = data;
 
             const existingSubCategory = await pool.query('SELECT * FROM subcategeory WHERE pimId = $1', [pimId]);
-
+            const s3Key = `images/${pimId}_${Date.now()}.jpg`
+            const upadteimage = await uploadImageToS3(data.image_src, s3Key);
             if (existingSubCategory.rows.length === 0) {
                 const response = await pool.query(
                     'INSERT INTO subcategeory (name, pimId, url, image_src, image_alt, description_elements) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-                    [data.name, data.pimId, data.url, data.image_src, data.image_alt, description_elements]
+                    [data.name, data.pimId, data.url, upadteimage, data.image_alt, description_elements]
                 );
                 return response.rows[0];
             } else {

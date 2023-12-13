@@ -5,7 +5,7 @@ import { FestoProduct } from "../controllers/products/festo";
 const addProduct = express.Router();
 
 addProduct.get("/add/lists", addLists);
-addProduct.post("/add/subCategeory", addSubCategory);
+addProduct.get("/add/subCategeory", addSubCategory);
 addProduct.get("/add/details", addDetailsDb);
 addProduct.get("/add/festo", FestoProduct)
 addProduct.get("/add/factoryproduct", addFactoryProduct)

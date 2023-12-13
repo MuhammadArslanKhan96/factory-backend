@@ -13,7 +13,7 @@ import { uploadImageToS3 } from "../../helpers/uploadImage/s3bucket";
 // const authHeader = `Basic ${Buffer.from(`${apiKey}:${apiSecret}`).toString("base64")}`;
 
 export const addSubCategory = async (req: express.Request, res: express.Response) => {
-    const { baseUrl } = req.body;
+    const baseUrl = "https://www.festo.com/gb/en/search/categories/pim2/";
     try {
         if (!baseUrl) {
             res.status(401).json({ message: "Please enter the url" });
@@ -22,14 +22,23 @@ export const addSubCategory = async (req: express.Request, res: express.Response
 
         const response = await axios.get(baseUrl, {
             headers: {
-                "Cookie": "LastSite=gb-en-001; JHYSESSIONID=Y12-93031766-97bc-4273-85a7-df5407852ba7.accstorefront-595b85f95c-lqqbj; ROUTE=.accstorefront-595b85f95c-lqqbj",
-                "Cache-Control": "no-cache",
-                "User-Agent": "Your-User-Agent",
-                "Accept": "*/*",
+                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
                 "Accept-Encoding": "gzip, deflate, br",
-                "Connection": "keep-alive",
+                "Accept-Language": "en-US,en;q=0.9",
+                "Cache-Control": "max-age=0",
+                "Cookie": "kameleoonVisitorCode=zjnz1lkemir3fwur; ckns_policy=00000; emos_jcvid=AYv65wFam0Iy9pkksxfeygwtRmbOHcXi:1:0:0:0:true:1; _gcl_au=1.1.1152953692.1700724373; _fbp=fb.1.1700724374090.1978132665; ELOQUA=GUID=0258691933D441E08A6BD1E7B5772B8E; _hjSessionUser_3237644=eyJpZCI6IjJjZTllNDdlLWM4ZmQtNWQ5MS05ODg5LTM0YWJjMmJjNzg1ZiIsImNyZWF0ZWQiOjE3MDA5MTUzNDQ1MDYsImV4aXN0aW5nIjp0cnVlfQ==; fox_ae-cart=0ad05770-7649-49f3-8944-87cd747ea186; LastSite=gb-en-001; info_revision=291308; fox_gb-cart=1f33609c-aa92-4b77-ac76-f257b1b9d0df; ROUTE=.accstorefront-69777d9bcc-fxqk9; emos_jcsid=AYxh7mrx6*arP5_VeU4VGBxRNcvtksAS:t:1:0; JHYSESSIONID=Y12-96e7c77a-c6ae-4eaf-80f8-b1cd9a31a556; _uetsid=c277404098dd11eebfa3bff799d1588c; _uetvid=9547628089d111ee9b9357ff8cd1bc86; RT=\"z=1&dm=festo.com&si=9013aed3-d5a2-4abb-83a5-bb5e1144ae44&ss=lq3gbcsn&sl=0&tt=0&bcn=%2F%2F684d0d48.akstat.io%2F&ld=1heoq&ul=sag&hd=tcs\"",
+                "Sec-Ch-Ua": "\"Not_A Brand\";v=\"8\", \"Chromium\";v=\"120\", \"Google Chrome\";v=\"120\"",
+                "Sec-Ch-Ua-Mobile": "?0",
+                "Sec-Ch-Ua-Platform": "\"Windows\"",
+                "Sec-Fetch-Dest": "document",
+                "Sec-Fetch-Mode": "navigate",
+                "Sec-Fetch-Site": "none",
+                "Sec-Fetch-User": "?1",
+                "Upgrade-Insecure-Requests": "1",
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
             },
         });
+
         const subCategoryData = response.data.subCategories;
         if (!subCategoryData) {
             res.status(401).json({ status: "Error", message: "This does not have data" });

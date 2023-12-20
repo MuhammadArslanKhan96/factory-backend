@@ -118,6 +118,7 @@ export const FestoProduct = async (req: express.Request, res: express.Response) 
                     images,
                 };
             });
+
             insertProductsFesto(product);
             products.push(product);
         }

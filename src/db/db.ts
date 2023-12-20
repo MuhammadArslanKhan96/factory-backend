@@ -152,6 +152,4 @@ createTable(
     images JSONB`
 )
 
-
-
 export default pool

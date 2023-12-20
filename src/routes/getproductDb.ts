@@ -2,6 +2,8 @@ import express from "express";
 import {
     getAllAccessoriesInDb,
     getAllProduct,
+    getAllProductsByCategory,
+    getAllslug,
     getDetailsInDb,
     getFactoryCategeory,
     getFactoryProduct,
@@ -38,5 +40,7 @@ products.get("/get/allproduct", getAllProduct)
 products.get("/get/festo", getfestoProducts)
 products.get("/get/code/:code", getFestoProductByCode)
 products.get("/get/lists/:code", getListByCode)
+products.get("/category/:slug", getAllProductsByCategory)
+products.get("/get/slug", getAllslug)
 
 export default products;

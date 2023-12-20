@@ -1,4 +1,4 @@
-import express from "express";
+import express, { json } from "express";
 import pool from "../../db/db";
 import { ExpressionType } from "aws-sdk/clients/glacier";
 
@@ -287,3 +287,41 @@ export const getListCode = async () => {
         throw error;
     }
 };
+
+export const getAllProductsByCategory = async (req: express.Request, res: express.Response) => {
+    const { slug } = req.params;
+    try {
+        const response = await pool.query(`
+            SELECT * 
+            FROM factoryProductsAll 
+            JOIN unnest(categories) cat ON true
+            WHERE cat->>'slug' = $1
+        `, [slug]);
+        const products = response.rows;
+
+        res.send(products);
+    } catch (error) {
+        console.log("🚀 ~ file: getproductdb.ts:296 ~ getAllProductsByCategory ~ error:", error);
+        res.send({ message: "Server error" });
+    }
+};
+
+
+export const getAllslug = async (req: express.Request, res: express.Response) => {
+    try {
+        const categoryResponse = await pool.query(`
+          SELECT DISTINCT cat->>'slug' as category_slug, cat->>'name' as category_name
+          FROM factoryProductsAll 
+          JOIN unnest(categories) cat ON true;
+        `);
+
+        const categories = categoryResponse.rows;
+
+        res.send(categories);
+    } catch (error) {
+        console.error("Error:", error);
+        res.status(500).send({ message: "Server error" });
+    }
+
+
+}

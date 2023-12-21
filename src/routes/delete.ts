@@ -1,5 +1,5 @@
 import express from "express";
-import { deleteDetail, deleteProduct, deleteAccessiories } from "../controllers/products/delete";
+import { deleteDetail, deleteProduct, deleteAccessiories } from "../controllers/products/deleteproduct/delete";
 
 const deleteroutes = express.Router();
 

@@ -1,11 +1,7 @@
 import axios from 'axios';
 import AWS from 'aws-sdk';
-import dotenv from "dotenv";
-//@ts-ignore
-dotenv.config("dotnev");
-const accessKeyId = process.env.ACESS_KEY_ID;
-const secretAccessKey = process.env.SECRET_ACESS_KEY;
-const region = process.env.RERIGION
+import { accessKeyId, bucketName, region, secretAccessKey } from '../../config';
+
 
 AWS.config.update({
     accessKeyId: accessKeyId,
@@ -13,7 +9,6 @@ AWS.config.update({
     region: region,
 });
 const s3 = new AWS.S3();
-const bucketName = 'factoryhelp-backend';
 
 export const uploadImageToS3 = async (imageUrl: any, key: any) => {
     try {
@@ -31,6 +26,7 @@ export const uploadImageToS3 = async (imageUrl: any, key: any) => {
         const fileContent = Buffer.from(response.data, 'binary');
 
         const result = await s3.upload({
+            //@ts-ignore
             Bucket: bucketName,
             Key: key,
             Body: fileContent,

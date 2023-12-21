@@ -1,8 +1,8 @@
 import axios from "axios";
-import { scrapeProducts, scrapeProducts2 } from "../../helpers/addproduct";
+import { scrapeProducts, scrapeProducts2 } from "../../../helpers/addproduct";
 import express from "express";
 import dotenv from "dotenv"
-import { addAlldata, addFactoryCategeoryModel, addFactoryHelpProductDb } from "../../models/factoryproduct";
+import { addAlldata, addFactoryCategeoryModel, addFactoryHelpProductDb } from "../../../models/factoryproduct";
 //@ts-ignore
 dotenv.config("dotenv");
 

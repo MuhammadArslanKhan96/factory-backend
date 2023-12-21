@@ -1,5 +1,5 @@
 import express, { json } from "express";
-import pool from "../../db/db";
+import pool from "../../../db/db";
 import { ExpressionType } from "aws-sdk/clients/glacier";
 
 export const getDetailsInDb = async (req: express.Request, res: express.Response) => {
@@ -93,50 +93,6 @@ export const getFactoryProduct = async (req: express.Request, res: express.Respo
     }
 }
 
-export const getAllProduct = async (req: express.Request, res: express.Response) => {
-    try {
-        const response = await pool.query(" SELECT * FROM  factoryProductsAll")
-        const countQuery = 'SELECT COUNT(*) FROM factoryProductsAll';
-        const countResponse = await pool.query(countQuery);
-        const totalCount = countResponse.rows[0].count;
-        const data = response.rows;
-        res.status(200).json({ meesge: "AllProduct", totalProduct: totalCount, data: data });
-    } catch (error) {
-        res.status(500).json({ message: "Server Error" });
-    }
-}
-
-export const getFactoryProductsPerPage = async (req: express.Request, res: express.Response) => {
-    try {
-        const perPage = 100;
-        let { page } = req.params as any;
-
-        page = parseInt(page);
-        if (isNaN(page) || page < 1) {
-            return res.status(400).json({ message: "Invalid page number" });
-        }
-
-        const offset = (page - 1) * perPage;
-
-        const dataQuery = {
-            text: 'SELECT * FROM factoryProductsAll ORDER BY id LIMIT $1 OFFSET $2',
-            values: [perPage, offset],
-        };
-
-        const dataResponse = await pool.query(dataQuery);
-        const data = dataResponse.rows;
-
-        const countQuery = 'SELECT COUNT(*) FROM factoryProductsAll';
-        const countResponse = await pool.query(countQuery);
-        const totalCount = countResponse.rows[0].count;
-        res.status(200).send({ message: `Products for page ${page}`, data: data, total: totalCount });
-
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Server Error" });
-    }
-};
-
 export const getFestoProductsPerPage = async (req: express.Request, res: express.Response) => {
     try {
         const perPage = 100;
@@ -168,8 +124,6 @@ export const getFestoProductsPerPage = async (req: express.Request, res: express
     }
 };
 
-
-
 export const getFactoryCategeory = async (req: express.Request, res: express.Response) => {
     try {
         const response = await pool.query(" SELECT *  FROM factoryCategeory")
@@ -178,42 +132,6 @@ export const getFactoryCategeory = async (req: express.Request, res: express.Res
         console.log("🚀 ~ file: getproductdb.ts:90 ~ getFactoryCategeory ~ data:", data.length)
     } catch (error) {
         res.status(500).json({ message: "Server Error" });
-    }
-}
-
-export const getFactoryProductById = async (req: express.Request, res: express.Response) => {
-    const { id } = req.params;
-    const productId = parseInt(id, 10);
-    if (isNaN(productId)) {
-        return res.status(400).json({ message: "Invalid product ID" });
-    }
-    try {
-        const response = await pool.query("SELECT * FROM factoryProductsAll WHERE id = $1", [productId]);
-
-        if (response.rows.length === 0) {
-            return res.status(404).json({ message: "Product not found" });
-        }
-        const product = response.rows[0];
-        res.status(200).json({ message: "Product retrieved successfully", data: product });
-    } catch (error) {
-        console.log("Error:", error);
-        res.status(500).json({ message: "Server Error" });
-    }
-};
-
-
-export const searchProduct = async (req: express.Request, res: express.Response) => {
-    try {
-        const { query } = req.params;
-        const searchResults = await pool.query(
-            'SELECT *  FROM  factoryProduct WHERE name = $1',
-            [query]
-        );
-        console.log("🚀 ~ file: getproductdb.ts:137 ~ searchProduct ~ searchQuery:", query)
-        res.status(200).json({ data: searchResults.rows });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Server Error' });
     }
 }
 
@@ -288,40 +206,6 @@ export const getListCode = async () => {
     }
 };
 
-export const getAllProductsByCategory = async (req: express.Request, res: express.Response) => {
-    const { slug } = req.params;
-    try {
-        const response = await pool.query(`
-            SELECT * 
-            FROM factoryProductsAll 
-            JOIN unnest(categories) cat ON true
-            WHERE cat->>'slug' = $1
-        `, [slug]);
-        const products = response.rows;
-
-        res.send(products);
-    } catch (error) {
-        console.log("🚀 ~ file: getproductdb.ts:296 ~ getAllProductsByCategory ~ error:", error);
-        res.send({ message: "Server error" });
-    }
-};
 
 
-export const getAllslug = async (req: express.Request, res: express.Response) => {
-    try {
-        const categoryResponse = await pool.query(`
-          SELECT DISTINCT cat->>'slug' as category_slug, cat->>'name' as category_name
-          FROM factoryProductsAll 
-          JOIN unnest(categories) cat ON true;
-        `);
 
-        const categories = categoryResponse.rows;
-
-        res.send(categories);
-    } catch (error) {
-        console.error("Error:", error);
-        res.status(500).send({ message: "Server error" });
-    }
-
-
-}

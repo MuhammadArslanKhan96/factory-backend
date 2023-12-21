@@ -1,7 +1,7 @@
 import express from "express";
 import puppeteer from "puppeteer";
-import { insertProductsFesto } from "../../models/productscraping";
-import { getUrlCode } from "./getproductdb";
+import { insertProductsFesto } from "../../../models/productscraping";
+import { getUrlCode } from "../getproduct/getproductdb";
 
 export const FestoProduct = async (req: express.Request, res: express.Response) => {
     const urls = await getUrlCode()

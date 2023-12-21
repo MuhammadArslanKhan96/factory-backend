@@ -1,10 +1,10 @@
 import express from "express";
-import { deleteAccessioriesByCode, deleteDetailByShortCode, deleteProductByCode } from "../../models/delete";
+import { deleteAccessioriesByCode, deleteDetailByShortCode, deleteProductByCode } from "../../../models/delete";
 export const deleteProduct = async (req: express.Request, res: express.Response) => {
     const { code } = req.params
     try {
         const response = await deleteProductByCode(code);
-        res.json({ message: "Product Delete Sucessfully" })
+        res.json({ message: "Product Delete Sucessfully", data: response })
     } catch (error) {
         res.status(500).json({ message: "Server Error" })
     }

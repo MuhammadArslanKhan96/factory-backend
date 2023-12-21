@@ -5,8 +5,8 @@ import {
   insertDetailsOnDb,
   insertListsOndDb,
   insertSubCategeoryOnDb,
-} from "../../models/productscraping";
-import { getListCode, getPimId, getShortCodesFromDb } from "./getproductdb";
+} from "../../../models/productscraping";
+import { getListCode, getPimId, getShortCodesFromDb } from "../getproduct/getproductdb";
 //@ts-ignore
 dotenv.config("dotenv");
 

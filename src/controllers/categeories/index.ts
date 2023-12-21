@@ -1,21 +1,47 @@
 import express from "express";
 import pool from "../../db/db";
 
-export const getProductbyCategeory = async (req: express.Request, res: express.Response) => {
-    const { slug } = req.params;
-    try {
-        const response = await pool.query(`
-            SELECT * 
-            FROM factoryProductsAll 
-            JOIN unnest(categories) cat ON true
-            WHERE cat->>'slug' = $1
-        `, [slug]);
-        const products = response.rows;
+export const getProductByCategory = async (req: express.Request, res: express.Response) => {
+    const { slug, page } = req.params;
 
-        res.send(products);
+    try {
+        const itemsPerPage = 100;
+        const offset = (parseInt(page) - 1) * itemsPerPage;
+
+        const productsQuery = `
+            SELECT 
+                product.id,
+                product.name,
+                product.price,
+                product.sku,
+                image->>'src' as image_src
+            FROM factoryProductsAll AS product
+            JOIN unnest(product.categories) cat ON true
+            JOIN unnest(product.images) image ON true
+            WHERE cat->>'slug' = $1
+            ORDER BY product.name
+            LIMIT $2 OFFSET $3;
+        `;
+
+        const countQuery = `
+            SELECT COUNT(*) AS total
+            FROM factoryProductsAll AS product
+            JOIN unnest(product.categories) cat ON true
+            WHERE cat->>'slug' = $1;
+        `;
+
+        const [productsResponse, countResponse] = await Promise.all([
+            pool.query(productsQuery, [slug, itemsPerPage, offset]),
+            pool.query(countQuery, [slug]),
+        ]);
+
+        const products = productsResponse.rows;
+        const totalProducts = countResponse.rows[0].total;
+
+        res.send({ total: totalProducts, data: products, });
     } catch (error) {
-        console.log("🚀 ~ file: getproductdb.ts:296 ~ getAllProductsByCategory ~ error:", error);
-        res.send({ message: "Server error" });
+        console.error(error);
+        res.status(500).send({ message: "Server error" });
     }
 };
 
